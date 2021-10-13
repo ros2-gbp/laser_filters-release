@@ -23,5 +23,5 @@ tracks:
     release_tag: :{version}
     ros_distro: rolling
     vcs_type: git
-    vcs_uri: https://github.com/ros-perception/laser_filters
+    vcs_uri: https://github.com/ros-perception/laser_filters.git
     version: :{auto}
