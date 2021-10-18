@@ -1,0 +1,12 @@
+Source: ros-galactic-laser-filters
+Section: misc
+Priority: optional
+Maintainer: Jon Binney <jon.binney@gmail.com>
+Build-Depends: debhelper (>= 9.0.0), ros-galactic-ament-cmake-auto, ros-galactic-ament-cmake-gtest, ros-galactic-angles, ros-galactic-filters, ros-galactic-laser-geometry, ros-galactic-message-filters, ros-galactic-pluginlib, ros-galactic-rclcpp, ros-galactic-rclcpp-lifecycle, ros-galactic-sensor-msgs, ros-galactic-tf2, ros-galactic-tf2-ros, ros-galactic-ros-workspace
+Homepage: http://ros.org/wiki/laser_filters
+Standards-Version: 3.9.2
+
+Package: ros-galactic-laser-filters
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-galactic-angles, ros-galactic-filters, ros-galactic-laser-geometry, ros-galactic-message-filters, ros-galactic-pluginlib, ros-galactic-rclcpp, ros-galactic-rclcpp-lifecycle, ros-galactic-sensor-msgs, ros-galactic-tf2, ros-galactic-tf2-ros, ros-galactic-ros-workspace
+Description: Assorted filters designed to operate on 2D planar laser scanners, which use the sensor_msgs/LaserScan type.
