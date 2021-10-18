@@ -4,12 +4,14 @@
     Assorted filters designed to operate on 2D planar laser scanners,
     which use the sensor_msgs/LaserScan type.
   </description>
-  <version>2.0.0</version>
+  <version>2.0.1</version>
   <maintainer email="jon.binney@gmail.com">Jon Binney</maintainer>
   <author>Tully Foote</author>
   <license>BSD</license>
 
   <url>http://ros.org/wiki/laser_filters</url>
+
+  <build_depend>ament_cmake_auto</build_depend>
 
   <depend>pluginlib</depend>
   <depend>sensor_msgs</depend>
