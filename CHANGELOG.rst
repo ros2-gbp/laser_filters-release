@@ -2,7 +2,7 @@
 Changelog for package laser_filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-2.0.2 (2021-10-19)
+2.0.3 (2021-10-19)
 ------------------
 * Add top level license file
   The license is the same as it always has been; this commmit just copies
