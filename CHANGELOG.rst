@@ -2,6 +2,20 @@
 Changelog for package laser_filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.4 (2022-04-08)
+------------------
+* Add a sensor_msgs dependency to test_scan_filter_chain
+* adding support for invert-parameter to select if points within or outside of box are kept
+* Contributors: Chris Lalancette, Jonathan Binney, Nikolas Engelhard
+
+2.0.3 (2021-10-19)
+------------------
+* Add top level license file
+  The license is the same as it always has been; this commmit just copies
+  the license text from the source files into a top level LICENSE file to
+  make it clear.
+* Contributors: Jon Binney
+
 2.0.1 (2021-10-18)
 ------------------
 * Add build depend on ament_cmake_auto
