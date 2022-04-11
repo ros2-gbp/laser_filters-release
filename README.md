@@ -1,3 +1,26 @@
+## laser_filters (rolling) - 2.0.4-2
+
+The packages in the `laser_filters` repository were released into the `rolling` distro by running `/usr/bin/bloom-release --ros-distro rolling --track rolling laser_filters` on `Mon, 11 Apr 2022 18:36:06 -0000`
+
+The `laser_filters` package was released.
+
+Version of package(s) in repository `laser_filters`:
+
+- upstream repository: https://github.com/ros-perception/laser_filters.git
+- release repository: https://github.com/ros2-gbp/laser_filters-release.git
+- rosdistro version: `2.0.1-2`
+- old version: `2.0.4-1`
+- new version: `2.0.4-2`
+
+Versions of tools used:
+
+- bloom version: `0.10.7`
+- catkin_pkg version: `0.4.24`
+- rosdep version: `0.21.0`
+- rosdistro version: `0.8.3`
+- vcstools version: `0.1.42`
+
+
 ## laser_filters (rolling) - 2.0.4-1
 
 The packages in the `laser_filters` repository were released into the `rolling` distro by running `/usr/bin/bloom-release --ros-distro rolling --track rolling laser_filters` on `Mon, 11 Apr 2022 18:34:00 -0000`
