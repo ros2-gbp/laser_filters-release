@@ -1,3 +1,26 @@
+## laser_filters (humble) - 2.0.7-1
+
+The packages in the `laser_filters` repository were released into the `humble` distro by running `/usr/bin/bloom-release laser_filters -r humble` on `Mon, 31 Jul 2023 17:51:39 -0000`
+
+The `laser_filters` package was released.
+
+Version of package(s) in repository `laser_filters`:
+
+- upstream repository: https://github.com/ros-perception/laser_filters.git
+- release repository: https://github.com/ros2-gbp/laser_filters-release.git
+- rosdistro version: `2.0.6-2`
+- old version: `2.0.6-2`
+- new version: `2.0.7-1`
+
+Versions of tools used:
+
+- bloom version: `0.11.2`
+- catkin_pkg version: `0.5.2`
+- rosdep version: `0.22.2`
+- rosdistro version: `0.9.0`
+- vcstools version: `0.1.42`
+
+
 ## laser_filters (rolling) - 2.0.7-1
 
 The packages in the `laser_filters` repository were released into the `rolling` distro by running `/usr/bin/bloom-release laser_filters -r rolling` on `Mon, 31 Jul 2023 17:46:29 -0000`
