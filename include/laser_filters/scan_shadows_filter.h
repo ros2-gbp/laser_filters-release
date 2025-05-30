@@ -195,15 +195,17 @@ public:
 
     for (auto parameter : parameters)
     {
-      if(parameter.get_name() == "min_angle"&& parameter.get_type() == rclcpp::ParameterType::PARAMETER_DOUBLE)
+      if(logging_interface_ != nullptr)
+          RCLCPP_DEBUG_STREAM(logging_interface_->get_logger(), "Update parameter " << parameter.get_name().c_str()<< " to "<<parameter);
+      if(parameter.get_name() == param_prefix_+"min_angle"&& parameter.get_type() == rclcpp::ParameterType::PARAMETER_DOUBLE)
           min_angle_ = parameter.as_double();
-      else if(parameter.get_name() == "max_angle" && parameter.get_type() == rclcpp::ParameterType::PARAMETER_DOUBLE)
+      else if(parameter.get_name() == param_prefix_+"max_angle" && parameter.get_type() == rclcpp::ParameterType::PARAMETER_DOUBLE)
           max_angle_ = parameter.as_double();
-      else if(parameter.get_name() == "neighbors" && parameter.get_type() == rclcpp::ParameterType::PARAMETER_INTEGER)
+      else if(parameter.get_name() == param_prefix_+"neighbors" && parameter.get_type() == rclcpp::ParameterType::PARAMETER_INTEGER)
           neighbors_ = parameter.as_int();
-      else if(parameter.get_name() == "window" && parameter.get_type() == rclcpp::ParameterType::PARAMETER_INTEGER)
+      else if(parameter.get_name() == param_prefix_+"window" && parameter.get_type() == rclcpp::ParameterType::PARAMETER_INTEGER)
           window_ = parameter.as_int();
-      else if(parameter.get_name() == "remove_shadow_start_point" && parameter.get_type() == rclcpp::ParameterType::PARAMETER_BOOL)
+      else if(parameter.get_name() == param_prefix_+"remove_shadow_start_point" && parameter.get_type() == rclcpp::ParameterType::PARAMETER_BOOL)
           remove_shadow_start_point_ = parameter.as_bool(); 
     }
     shadow_detector_.configure(
