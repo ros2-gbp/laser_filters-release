@@ -42,6 +42,7 @@ ScanToCloudFilterChain::ScanToCloudFilterChain(
   const rclcpp::NodeOptions & options,
   const std::string & ns)
 : rclcpp::Node("scan_to_cloud_filter_chain", ns, options),
+  diagnostic_updater_(this),
   laser_max_range_(DBL_MAX),
   buffer_(this->get_clock()),
   tf_(buffer_),
@@ -50,6 +51,9 @@ ScanToCloudFilterChain::ScanToCloudFilterChain(
   cloud_filter_chain_("sensor_msgs::msg::PointCloud2"),
   scan_filter_chain_("sensor_msgs::msg::LaserScan")
 {
+  // Heartbeat diagnostics
+  diagnostic_updater_.add(heartbeat_diagnostics_);
+
   rcl_interfaces::msg::ParameterDescriptor read_only_desc;
   read_only_desc.read_only = true;
 
@@ -94,18 +98,18 @@ ScanToCloudFilterChain::ScanToCloudFilterChain(
         if (s.current_count == 0) {
           scan_sub_.unsubscribe();
         } else if (!scan_sub_.getSubscriber()) {
-          scan_sub_.subscribe(this, "scan", rmw_qos_profile_sensor_data);
+          scan_sub_.subscribe(this, "scan", rclcpp::SensorDataQoS());
         }
       };
     cloud_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(
       "cloud_filtered", 10, pub_options);
   } else {
     cloud_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("cloud_filtered", 10);
-    scan_sub_.subscribe(this, "scan", rmw_qos_profile_sensor_data);
+    scan_sub_.subscribe(this, "scan", rclcpp::SensorDataQoS());
   }
   #else
   cloud_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("cloud_filtered", 10);
-  scan_sub_.subscribe(this, "scan", rmw_qos_profile_sensor_data);
+  scan_sub_.subscribe(this, "scan", rclcpp::SensorDataQoS());
   #endif
 
   cloud_filter_chain_.configure(
