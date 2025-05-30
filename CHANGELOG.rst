@@ -2,6 +2,15 @@
 Changelog for package laser_filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.2.0 (2025-05-30)
+------------------
+* Updated deprecated calls to message_filters
+* Added heartbeat diagnostics
+* Window size check to prevent segfault in speckle filter
+* Added params_prefix to reconfigure callback
+* Remove use of boost from polygon_filter
+* Contributors: Alejandro Hernandez Cordero, Alejandro Hernández Cordero, Jeanine van Bruggen, Silvio Traversaro
+
 2.0.8 (2024-11-12)
 ------------------
 * Merge pull request `#202 <https://github.com/ros-perception/laser_filters/issues/202>`_ from Oscar-Robotics/ros2
