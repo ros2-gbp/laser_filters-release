@@ -43,6 +43,8 @@
 #ifndef POLYGON_FILTER_H
 #define POLYGON_FILTER_H
 
+#include <mutex>
+
 #include <filters/filter_base.hpp>
 
 #include <sensor_msgs/msg/laser_scan.hpp>
@@ -54,7 +56,6 @@
 #include <rclcpp_lifecycle/lifecycle_node.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #include <tf2_ros/buffer.h>
-#include <boost/thread.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <rcl_interfaces/msg/set_parameters_result.hpp>
 
@@ -286,7 +287,7 @@ public:
 protected:
   rclcpp::Publisher<geometry_msgs::msg::PolygonStamped>::SharedPtr polygon_pub_;
   rclcpp::Subscription<geometry_msgs::msg::Polygon>::SharedPtr footprint_sub_;
-  boost::recursive_mutex own_mutex_;
+  std::recursive_mutex own_mutex_;
   // configuration
   std::string polygon_frame_;
   geometry_msgs::msg::Polygon polygon_;
@@ -302,23 +303,25 @@ protected:
   rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr on_set_parameters_callback_handle_;
   virtual rcl_interfaces::msg::SetParametersResult reconfigureCB(std::vector<rclcpp::Parameter> parameters)
   {
-    boost::recursive_mutex::scoped_lock lock(own_mutex_);
+    std::lock_guard<std::recursive_mutex> lock(own_mutex_);
     auto result = rcl_interfaces::msg::SetParametersResult();
     result.successful = true;
 
     for (auto parameter : parameters)
     {
-      if(parameter.get_name() == "polygon"&& parameter.get_type() == rclcpp::ParameterType::PARAMETER_STRING){
+      if(logging_interface_ != nullptr)
+          RCLCPP_DEBUG_STREAM(logging_interface_->get_logger(), "Update parameter " << parameter.get_name().c_str()<< " to "<<parameter);
+      if(parameter.get_name() == param_prefix_+"polygon"&& parameter.get_type() == rclcpp::ParameterType::PARAMETER_STRING){
         std::string polygon_string = parameter.as_string();
         polygon_ = makePolygonFromString(polygon_string, polygon_);
       }
-      else if(parameter.get_name() == "polygon_frame" && parameter.get_type() == rclcpp::ParameterType::PARAMETER_STRING){
+      else if(parameter.get_name() == param_prefix_+"polygon_frame" && parameter.get_type() == rclcpp::ParameterType::PARAMETER_STRING){
         polygon_frame_ = parameter.as_string();
       }
-      else if(parameter.get_name() == "invert" && parameter.get_type() == rclcpp::ParameterType::PARAMETER_BOOL){
+      else if(parameter.get_name() == param_prefix_+"invert" && parameter.get_type() == rclcpp::ParameterType::PARAMETER_BOOL){
         invert_filter_ = parameter.as_bool();
       }
-      else if(parameter.get_name() == "polygon_padding" && parameter.get_type() == rclcpp::ParameterType::PARAMETER_DOUBLE){
+      else if(parameter.get_name() == param_prefix_+"polygon_padding" && parameter.get_type() == rclcpp::ParameterType::PARAMETER_DOUBLE){
         polygon_padding_ = parameter.as_double();
       }
       else{
@@ -373,7 +376,7 @@ public:
   {
     auto start = std::chrono::high_resolution_clock::now();
 
-    boost::recursive_mutex::scoped_lock lock(own_mutex_);
+    std::lock_guard<std::recursive_mutex> lock(own_mutex_);
 
     publishPolygon();
 
@@ -488,7 +491,7 @@ public:
 
   bool update(const sensor_msgs::msg::LaserScan& input_scan, sensor_msgs::msg::LaserScan& output_scan) override
   {
-    boost::recursive_mutex::scoped_lock lock(own_mutex_);
+    std::lock_guard<std::recursive_mutex> lock(own_mutex_);
     publishPolygon();
 
     if (!is_polygon_transformed_) 
