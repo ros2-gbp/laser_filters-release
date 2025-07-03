@@ -174,27 +174,22 @@ public:
 
   ///////////////////////////////////////////////////////////////
   bool configure(){
-    node_ = std::make_shared<rclcpp::Node>(getName());
-    // dynamic reconfigure parameters callback:
-    on_set_parameters_callback_handle_ = node_->add_on_set_parameters_callback(
-            std::bind(&LaserScanSpeckleFilter::reconfigureCB, this, std::placeholders::_1));
-
     // get params
-    if (!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("filter_type"), filter_type))
+    if (!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("filter_type"), filter_type, false))
     {
-      RCLCPP_ERROR(node_->get_logger(), "Error: SpeckleFilter was not given filter_type.\n");
+      RCLCPP_ERROR(logging_interface_->get_logger(), "Error: SpeckleFilter was not given filter_type.\n");
       return false;
-    }if (!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("max_range"), max_range))
+    }if (!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("max_range"), max_range, false))
     {
-      RCLCPP_ERROR(node_->get_logger(), "Error: SpeckleFilter was not given max_range.\n");
+      RCLCPP_ERROR(logging_interface_->get_logger(), "Error: SpeckleFilter was not given max_range.\n");
       return false;
-    }if (!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("max_range_difference"), max_range_difference))
+    }if (!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("max_range_difference"), max_range_difference, false))
     {
-      RCLCPP_ERROR(node_->get_logger(), "Error: SpeckleFilter was not given max_range_difference.\n");
+      RCLCPP_ERROR(logging_interface_->get_logger(), "Error: SpeckleFilter was not given max_range_difference.\n");
       return false;
-    }if (!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("filter_window"), filter_window))
+    }if (!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("filter_window"), filter_window, false))
     {
-      RCLCPP_ERROR(node_->get_logger(), "Error: SpeckleFilter was not given filter_window.\n");
+      RCLCPP_ERROR(logging_interface_->get_logger(), "Error: SpeckleFilter was not given filter_window.\n");
       return false;
     }
 
@@ -225,6 +220,14 @@ public:
   bool update(const sensor_msgs::msg::LaserScan& input_scan, sensor_msgs::msg::LaserScan& output_scan){
     output_scan = input_scan;
     std::vector<bool> valid_ranges(output_scan.ranges.size(), false);
+
+    /*Check if range size is big enough to use the filter window */
+    if (output_scan.ranges.size() <= filter_window + 1)
+    {
+      RCLCPP_ERROR(logging_interface_->get_logger(), "Scan ranges size is too small for set window: size = %zu, window = %i", output_scan.ranges.size(), filter_window);
+      return false;
+    }
+
     for (size_t idx = 0; idx < output_scan.ranges.size() - filter_window + 1; ++idx)
     {
       bool window_valid = validator_->checkWindowValid(
@@ -253,18 +256,6 @@ public:
     return true;
   }
 
-  ////////////////////////////////////////////////////
-
-
-private:
-  WindowValidator* validator_;
-  int filter_type = 0;
-  double max_range = 0;
-  double max_range_difference = 0;
-  int filter_window = 0;
-  rclcpp::Node::SharedPtr node_;
-  rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr on_set_parameters_callback_handle_;
-
   rcl_interfaces::msg::SetParametersResult reconfigureCB(std::vector<rclcpp::Parameter> parameters)
   {
       auto result = rcl_interfaces::msg::SetParametersResult();
@@ -272,17 +263,18 @@ private:
 
       for (auto parameter : parameters)
       {
-        RCLCPP_INFO_STREAM(node_->get_logger(), "Update parameter " << parameter.get_name().c_str()<< " to "<<parameter);
-        if(parameter.get_name() == "filter_type"&& parameter.get_type() == rclcpp::ParameterType::PARAMETER_INTEGER)
+        if(logging_interface_ != nullptr)
+          RCLCPP_DEBUG_STREAM(logging_interface_->get_logger(), "Update parameter " << parameter.get_name().c_str()<< " to "<<parameter);
+        if(parameter.get_name() == param_prefix_+"filter_type"&& parameter.get_type() == rclcpp::ParameterType::PARAMETER_INTEGER)
             filter_type = parameter.as_int();
-        else if(parameter.get_name() == "max_range" && parameter.get_type() == rclcpp::ParameterType::PARAMETER_DOUBLE)
+        else if(parameter.get_name() == param_prefix_+"max_range" && parameter.get_type() == rclcpp::ParameterType::PARAMETER_DOUBLE)
             max_range = parameter.as_double();
-        else if(parameter.get_name() == "max_range_difference" && parameter.get_type() == rclcpp::ParameterType::PARAMETER_DOUBLE)
+        else if(parameter.get_name() == param_prefix_+"max_range_difference" && parameter.get_type() == rclcpp::ParameterType::PARAMETER_DOUBLE)
             max_range_difference = parameter.as_double();
-        else if(parameter.get_name() == "filter_window" && parameter.get_type() == rclcpp::ParameterType::PARAMETER_INTEGER)
+        else if(parameter.get_name() == param_prefix_+"filter_window" && parameter.get_type() == rclcpp::ParameterType::PARAMETER_INTEGER)
             filter_window = parameter.as_int();
         else
-          RCLCPP_WARN(node_->get_logger(), "Unknown parameter");
+          if(logging_interface_ != nullptr) RCLCPP_WARN(logging_interface_->get_logger(), "Unknown parameter");
       }
 
     switch (filter_type) {
@@ -310,6 +302,15 @@ private:
 
   }
 
+  ////////////////////////////////////////////////////
+
+
+private:
+  WindowValidator* validator_;
+  int filter_type = 0;
+  double max_range = 0;
+  double max_range_difference = 0;
+  int filter_window = 0;
 };
 }
 #endif /* speckle_filter.h */
