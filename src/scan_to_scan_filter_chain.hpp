@@ -27,6 +27,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <diagnostic_updater/diagnostic_updater.hpp>
+#include <diagnostic_updater/update_functions.hpp>
 
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
@@ -63,6 +65,10 @@ protected:
   #endif
   std::string tf_message_filter_target_frame_;
   double tf_filter_tolerance_;
+
+  // Diagnostic updater
+  diagnostic_updater::Heartbeat heartbeat_diagnostics_;
+  diagnostic_updater::Updater diagnostic_updater_;
 
 public:
   // Constructor
