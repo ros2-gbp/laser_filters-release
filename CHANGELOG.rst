@@ -2,20 +2,19 @@
 Changelog for package laser_filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-2.2.1 (2025-06-30)
+2.0.9 (2025-07-03)
 ------------------
-* Update tf2 headers
-* Fix compilation on Windows by exporting all symbols with `CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS `
-* Contributors: Silvio Traversaro, Yadunund
-
-2.2.0 (2025-05-30)
-------------------
-* Updated deprecated calls to message_filters
+* Fix compile warning in speckle filter
+* Port ros1 functionalities
+* Make reconfigurable parameters writable
+* Remove rolling from ros2 branch CI Rolling is now released from the "rolling" branch.
+* Use correct footprint subscriber callback for static polygon filter
 * Added heartbeat diagnostics
-* Window size check to prevent segfault in speckle filter
+* Added window size check to prevent segfault in speckle filter
 * Added params_prefix to reconfigure callback
 * Remove use of boost from polygon_filter
-* Contributors: Alejandro Hernandez Cordero, Alejandro Hernández Cordero, Jeanine van Bruggen, Silvio Traversaro
+* Remove iron from ci - EOL
+* Contributors: Alejandro Hernández Cordero, Jeanine van Bruggen, Jonathan Binney, Silvio Traversaro
 
 2.0.8 (2024-11-12)
 ------------------
