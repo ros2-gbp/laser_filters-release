@@ -42,6 +42,7 @@ ScanToCloudFilterChain::ScanToCloudFilterChain(
   const rclcpp::NodeOptions & options,
   const std::string & ns)
 : rclcpp::Node("scan_to_cloud_filter_chain", ns, options),
+  diagnostic_updater_(this),
   laser_max_range_(DBL_MAX),
   buffer_(this->get_clock()),
   tf_(buffer_),
@@ -50,6 +51,9 @@ ScanToCloudFilterChain::ScanToCloudFilterChain(
   cloud_filter_chain_("sensor_msgs::msg::PointCloud2"),
   scan_filter_chain_("sensor_msgs::msg::LaserScan")
 {
+  // Heartbeat diagnostics
+  diagnostic_updater_.add(heartbeat_diagnostics_);
+
   rcl_interfaces::msg::ParameterDescriptor read_only_desc;
   read_only_desc.read_only = true;
 
