@@ -33,6 +33,8 @@
 
 
  */
+#include <diagnostic_updater/diagnostic_updater.hpp>
+#include <diagnostic_updater/update_functions.hpp>
 
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
@@ -85,4 +87,8 @@ public:
 
   void
   scanCallback(const std::shared_ptr<const sensor_msgs::msg::LaserScan> & scan_msg);
+
+  // Diagnostic updater
+  diagnostic_updater::Heartbeat heartbeat_diagnostics_;
+  diagnostic_updater::Updater diagnostic_updater_;
 };

@@ -36,11 +36,15 @@ ScanToScanFilterChain::ScanToScanFilterChain(
   const rclcpp::NodeOptions & options,
   const std::string & ns)
 : rclcpp::Node("scan_to_scan_filter_chain", ns, options),
+  diagnostic_updater_(this),
   tf_(NULL),
   buffer_(this->get_clock()),
   tf_filter_(NULL),
   filter_chain_("sensor_msgs::msg::LaserScan")
 {
+  // Heartbeat diagnostics
+  diagnostic_updater_.add(heartbeat_diagnostics_);
+  
   // Configure filter chain
   filter_chain_.configure(
     "",
