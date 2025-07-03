@@ -43,6 +43,8 @@
 #ifndef POLYGON_FILTER_H
 #define POLYGON_FILTER_H
 
+#include <mutex>
+
 #include <filters/filter_base.hpp>
 
 #include <sensor_msgs/msg/laser_scan.hpp>
@@ -54,7 +56,6 @@
 #include <rclcpp_lifecycle/lifecycle_node.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #include <tf2_ros/buffer.h>
-#include <boost/thread.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <rcl_interfaces/msg/set_parameters_result.hpp>
 
@@ -233,37 +234,28 @@ public:
               std::bind(&LaserScanPolygonFilterBase::reconfigureCB, this, std::placeholders::_1));
 
     std::string polygon_string;
-    invert_filter_ = false;
-    polygon_padding_ = 0;
-    std::string footprint_topic;
-    if(!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("footprint_topic"), footprint_topic))
+    if(!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("footprint_topic"), footprint_topic_, false, "base_footprint_exclude"))
     {
       RCLCPP_WARN(logging_interface_->get_logger(), "Footprint topic not set, assuming default: base_footprint_exclude");
-    }
-    // Set default footprint topic
-    if(footprint_topic=="")
-    {
-      footprint_topic = "base_footprint_exclude";
     }
     if (!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("polygon"), polygon_string))
     {
       RCLCPP_ERROR(logging_interface_->get_logger(), "Error: PolygonFilter was not given polygon.\n");
       return false;
-    }if (!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("polygon_frame"), polygon_frame_))
+    }if (!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("polygon_frame"), polygon_frame_, false))
     {
       RCLCPP_ERROR(logging_interface_->get_logger(), "Error: PolygonFilter was not given polygon_frame.\n");
       return false;
-    }if (!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("invert"), invert_filter_))
+    }if (!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("invert"), invert_filter_, false))
     {
       RCLCPP_INFO(logging_interface_->get_logger(), "Error: PolygonFilter invert filter not set, assuming false.\n");
-    }if (!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("polygon_padding"), polygon_padding_))
+    }if (!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("polygon_padding"), polygon_padding_, false))
     {
       RCLCPP_INFO(logging_interface_->get_logger(), "Error: PolygonFilter polygon_padding not set, assuming 0. \n");
     }
     polygon_ = makePolygonFromString(polygon_string, polygon_);
     padPolygon(polygon_, polygon_padding_);
     
-    footprint_sub_ = create_subscription<geometry_msgs::msg::Polygon>(footprint_topic, 1, std::bind(&LaserScanPolygonFilterBase::footprintCB, this, std::placeholders::_1));
     polygon_pub_ = create_publisher<geometry_msgs::msg::PolygonStamped>("polygon", rclcpp::QoS(1).transient_local().keep_last(1));
     is_polygon_published_ = false;
     
@@ -286,12 +278,13 @@ public:
 protected:
   rclcpp::Publisher<geometry_msgs::msg::PolygonStamped>::SharedPtr polygon_pub_;
   rclcpp::Subscription<geometry_msgs::msg::Polygon>::SharedPtr footprint_sub_;
-  boost::recursive_mutex own_mutex_;
+  std::recursive_mutex own_mutex_;
   // configuration
   std::string polygon_frame_;
   geometry_msgs::msg::Polygon polygon_;
   double polygon_padding_;
   bool invert_filter_;
+  std::string footprint_topic_;
   bool is_polygon_published_ = false;
   
 
@@ -302,23 +295,25 @@ protected:
   rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr on_set_parameters_callback_handle_;
   virtual rcl_interfaces::msg::SetParametersResult reconfigureCB(std::vector<rclcpp::Parameter> parameters)
   {
-    boost::recursive_mutex::scoped_lock lock(own_mutex_);
+    std::lock_guard<std::recursive_mutex> lock(own_mutex_);
     auto result = rcl_interfaces::msg::SetParametersResult();
     result.successful = true;
 
     for (auto parameter : parameters)
     {
-      if(parameter.get_name() == "polygon"&& parameter.get_type() == rclcpp::ParameterType::PARAMETER_STRING){
+      if(logging_interface_ != nullptr)
+          RCLCPP_DEBUG_STREAM(logging_interface_->get_logger(), "Update parameter " << parameter.get_name().c_str()<< " to "<<parameter);
+      if(parameter.get_name() == param_prefix_+"polygon"&& parameter.get_type() == rclcpp::ParameterType::PARAMETER_STRING){
         std::string polygon_string = parameter.as_string();
         polygon_ = makePolygonFromString(polygon_string, polygon_);
       }
-      else if(parameter.get_name() == "polygon_frame" && parameter.get_type() == rclcpp::ParameterType::PARAMETER_STRING){
+      else if(parameter.get_name() == param_prefix_+"polygon_frame" && parameter.get_type() == rclcpp::ParameterType::PARAMETER_STRING){
         polygon_frame_ = parameter.as_string();
       }
-      else if(parameter.get_name() == "invert" && parameter.get_type() == rclcpp::ParameterType::PARAMETER_BOOL){
+      else if(parameter.get_name() == param_prefix_+"invert" && parameter.get_type() == rclcpp::ParameterType::PARAMETER_BOOL){
         invert_filter_ = parameter.as_bool();
       }
-      else if(parameter.get_name() == "polygon_padding" && parameter.get_type() == rclcpp::ParameterType::PARAMETER_DOUBLE){
+      else if(parameter.get_name() == param_prefix_+"polygon_padding" && parameter.get_type() == rclcpp::ParameterType::PARAMETER_DOUBLE){
         polygon_padding_ = parameter.as_double();
       }
       else{
@@ -366,6 +361,7 @@ public:
   bool configure() override
   {
     bool result = LaserScanPolygonFilterBase::configure();
+    footprint_sub_ = create_subscription<geometry_msgs::msg::Polygon>(footprint_topic_, 1, std::bind(&LaserScanPolygonFilterBase::footprintCB, this, std::placeholders::_1));
     return result;
   }
 
@@ -373,7 +369,7 @@ public:
   {
     auto start = std::chrono::high_resolution_clock::now();
 
-    boost::recursive_mutex::scoped_lock lock(own_mutex_);
+    std::lock_guard<std::recursive_mutex> lock(own_mutex_);
 
     publishPolygon();
 
@@ -483,12 +479,13 @@ public:
     {
       RCLCPP_INFO(logging_interface_->get_logger(), "Error: PolygonFilter transform_timeout not set, assuming 5. \n");
     }
+    footprint_sub_ = create_subscription<geometry_msgs::msg::Polygon>(footprint_topic_, 1, std::bind(&StaticLaserScanPolygonFilter::footprintCB, this, std::placeholders::_1));
     return result;
   }
 
   bool update(const sensor_msgs::msg::LaserScan& input_scan, sensor_msgs::msg::LaserScan& output_scan) override
   {
-    boost::recursive_mutex::scoped_lock lock(own_mutex_);
+    std::lock_guard<std::recursive_mutex> lock(own_mutex_);
     publishPolygon();
 
     if (!is_polygon_transformed_) 
