@@ -2,15 +2,15 @@ name: Build and run ROS2 tests
 
 on:
   push:
-    branches: [ ros2 ]
+    branches: [ kilted ]
   pull_request:
-    branches: [ ros2 ]
+    branches: [ kilted ]
 
 jobs:
   build:
     strategy:
       matrix:
-        rosdistro: [humble, jazzy]
+        rosdistro: [kilted]
 
     runs-on: ubuntu-latest
 

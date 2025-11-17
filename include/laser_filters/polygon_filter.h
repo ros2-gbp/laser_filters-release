@@ -234,11 +234,13 @@ public:
               std::bind(&LaserScanPolygonFilterBase::reconfigureCB, this, std::placeholders::_1));
 
     std::string polygon_string;
+    invert_filter_ = false;
+    polygon_padding_ = 0;
     if(!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("footprint_topic"), footprint_topic_, false, "base_footprint_exclude"))
     {
       RCLCPP_WARN(logging_interface_->get_logger(), "Footprint topic not set, assuming default: base_footprint_exclude");
     }
-    if (!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("polygon"), polygon_string))
+    if (!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("polygon"), polygon_string, false))
     {
       RCLCPP_ERROR(logging_interface_->get_logger(), "Error: PolygonFilter was not given polygon.\n");
       return false;

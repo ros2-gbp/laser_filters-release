@@ -2,19 +2,23 @@
 Changelog for package laser_filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-2.0.9 (2025-07-03)
+2.2.3 (2025-11-17)
 ------------------
+* Parameter for chaning history depth of filtered scan publisher
+* Binning filter
 * Fix compile warning in speckle filter
-* Port ros1 functionalities
-* Make reconfigurable parameters writable
-* Remove rolling from ros2 branch CI Rolling is now released from the "rolling" branch.
-* Use correct footprint subscriber callback for static polygon filter
+* Added readonly = false to reconfigurable parameters
+* Run CI on kilted branch
+* Contributors: Anthony Goeckner, Griffin Tabor, Guillaume Doisy, Jeanine van Bruggen, Tatsuro Sakaguchi
+
+2.2.0 (2025-05-30)
+------------------
+* Updated deprecated calls to message_filters
 * Added heartbeat diagnostics
-* Added window size check to prevent segfault in speckle filter
+* Window size check to prevent segfault in speckle filter
 * Added params_prefix to reconfigure callback
 * Remove use of boost from polygon_filter
-* Remove iron from ci - EOL
-* Contributors: Alejandro Hernández Cordero, Jeanine van Bruggen, Jonathan Binney, Silvio Traversaro
+* Contributors: Alejandro Hernandez Cordero, Alejandro Hernández Cordero, Jeanine van Bruggen, Silvio Traversaro
 
 2.0.8 (2024-11-12)
 ------------------
