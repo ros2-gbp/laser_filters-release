@@ -175,19 +175,19 @@ public:
   ///////////////////////////////////////////////////////////////
   bool configure(){
     // get params
-    if (!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("filter_type"), filter_type))
+    if (!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("filter_type"), filter_type, false))
     {
       RCLCPP_ERROR(logging_interface_->get_logger(), "Error: SpeckleFilter was not given filter_type.\n");
       return false;
-    }if (!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("max_range"), max_range))
+    }if (!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("max_range"), max_range, false))
     {
       RCLCPP_ERROR(logging_interface_->get_logger(), "Error: SpeckleFilter was not given max_range.\n");
       return false;
-    }if (!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("max_range_difference"), max_range_difference))
+    }if (!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("max_range_difference"), max_range_difference, false))
     {
       RCLCPP_ERROR(logging_interface_->get_logger(), "Error: SpeckleFilter was not given max_range_difference.\n");
       return false;
-    }if (!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("filter_window"), filter_window))
+    }if (!filters::FilterBase<sensor_msgs::msg::LaserScan>::getParam(std::string("filter_window"), filter_window, false))
     {
       RCLCPP_ERROR(logging_interface_->get_logger(), "Error: SpeckleFilter was not given filter_window.\n");
       return false;
@@ -224,7 +224,7 @@ public:
     /*Check if range size is big enough to use the filter window */
     if (output_scan.ranges.size() <= filter_window + 1)
     {
-      RCLCPP_ERROR(logging_interface_->get_logger(), "Scan ranges size is too small for set window: size = %li, window = %i", output_scan.ranges.size(), filter_window);
+      RCLCPP_ERROR(logging_interface_->get_logger(), "Scan ranges size is too small for set window: size = %zu, window = %i", output_scan.ranges.size(), filter_window);
       return false;
     }
 
