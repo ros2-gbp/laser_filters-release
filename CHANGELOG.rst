@@ -2,14 +2,19 @@
 Changelog for package laser_filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-2.2.3 (2025-11-17)
+2.3.1 (2025-11-17)
 ------------------
-* Parameter for chaning history depth of filtered scan publisher
+* Expose filtered scan histery depth as param
 * Binning filter
 * Fix compile warning in speckle filter
 * Added readonly = false to reconfigurable parameters
-* Run CI on kilted branch
 * Contributors: Anthony Goeckner, Griffin Tabor, Guillaume Doisy, Jeanine van Bruggen, Tatsuro Sakaguchi
+
+2.2.1 (2025-06-30)
+------------------
+* Update tf2 headers
+* Fix compilation on Windows by exporting all symbols with `CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS `
+* Contributors: Silvio Traversaro, Yadunund
 
 2.2.0 (2025-05-30)
 ------------------
