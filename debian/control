@@ -1,0 +1,12 @@
+Source: ros-kilted-laser-filters
+Section: misc
+Priority: optional
+Maintainer: Jon Binney <jon.binney@gmail.com>
+Build-Depends: debhelper (>= 9.0.0), ros-kilted-ament-cmake-auto, ros-kilted-ament-cmake-gtest <!nocheck>, ros-kilted-angles, ros-kilted-diagnostic-msgs, ros-kilted-diagnostic-updater, ros-kilted-filters, ros-kilted-laser-geometry, ros-kilted-launch-testing-ament-cmake <!nocheck>, ros-kilted-message-filters, ros-kilted-pluginlib, ros-kilted-rclcpp, ros-kilted-rclcpp-components, ros-kilted-rclcpp-lifecycle, ros-kilted-sensor-msgs, ros-kilted-tf2, ros-kilted-tf2-geometry-msgs, ros-kilted-tf2-kdl, ros-kilted-tf2-ros, ros-kilted-ros-workspace
+Homepage: http://ros.org/wiki/laser_filters
+Standards-Version: 3.9.2
+
+Package: ros-kilted-laser-filters
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-kilted-angles, ros-kilted-diagnostic-msgs, ros-kilted-diagnostic-updater, ros-kilted-filters, ros-kilted-laser-geometry, ros-kilted-message-filters, ros-kilted-pluginlib, ros-kilted-rclcpp, ros-kilted-rclcpp-components, ros-kilted-rclcpp-lifecycle, ros-kilted-sensor-msgs, ros-kilted-tf2, ros-kilted-tf2-geometry-msgs, ros-kilted-tf2-kdl, ros-kilted-tf2-ros, ros-kilted-ros-workspace
+Description: Assorted filters designed to operate on 2D planar laser scanners, which use the sensor_msgs/LaserScan type.
