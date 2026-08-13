@@ -2,33 +2,26 @@
 Changelog for package laser_filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-2.3.2 (2026-01-19)
-------------------
-* Updates to handle API changes in tf2_ros and rclcpp in rolling.
-* Contributors: Alejandro Hernandez Cordero
+2.0.10 (2026-08-13)
+-------------------
+* Optional wrapping of angles in AngularBoundsFilter
+* New added LaserScanBinningFilter: places measurements into fixed number of bins.
+* Set hardware id in diagnostic messages
+* Contributors: Anthony Goeckner, Griffin Tabor, Tatsuro Sakaguchi, K Herbstzuber
 
-2.3.1 (2025-11-17)
+2.0.9 (2025-07-03)
 ------------------
-* Expose filtered scan histery depth as param
-* Binning filter
 * Fix compile warning in speckle filter
-* Added readonly = false to reconfigurable parameters
-* Contributors: Anthony Goeckner, Griffin Tabor, Guillaume Doisy, Jeanine van Bruggen, Tatsuro Sakaguchi
-
-2.2.1 (2025-06-30)
-------------------
-* Update tf2 headers
-* Fix compilation on Windows by exporting all symbols with `CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS `
-* Contributors: Silvio Traversaro, Yadunund
-
-2.2.0 (2025-05-30)
-------------------
-* Updated deprecated calls to message_filters
+* Port ros1 functionalities
+* Make reconfigurable parameters writable
+* Remove rolling from ros2 branch CI Rolling is now released from the "rolling" branch.
+* Use correct footprint subscriber callback for static polygon filter
 * Added heartbeat diagnostics
-* Window size check to prevent segfault in speckle filter
+* Added window size check to prevent segfault in speckle filter
 * Added params_prefix to reconfigure callback
 * Remove use of boost from polygon_filter
-* Contributors: Alejandro Hernandez Cordero, Alejandro Hernández Cordero, Jeanine van Bruggen, Silvio Traversaro
+* Remove iron from ci - EOL
+* Contributors: Alejandro Hernández Cordero, Jeanine van Bruggen, Jonathan Binney, Silvio Traversaro
 
 2.0.8 (2024-11-12)
 ------------------

@@ -46,7 +46,8 @@ ScanToCloudFilterChain::ScanToCloudFilterChain(
   laser_max_range_(DBL_MAX),
   buffer_(this->get_clock()),
   tf_(buffer_),
-  filter_(scan_sub_, buffer_, "", 50, *this),
+  filter_(scan_sub_, buffer_, "", 50, this->get_node_logging_interface(),
+    this->get_node_clock_interface()),
   cloud_filter_chain_("sensor_msgs::msg::PointCloud2"),
   scan_filter_chain_("sensor_msgs::msg::LaserScan")
 {
@@ -97,18 +98,18 @@ ScanToCloudFilterChain::ScanToCloudFilterChain(
         if (s.current_count == 0) {
           scan_sub_.unsubscribe();
         } else if (!scan_sub_.getSubscriber()) {
-          scan_sub_.subscribe(this, "scan", rclcpp::SensorDataQoS());
+          scan_sub_.subscribe(this, "scan", rmw_qos_profile_sensor_data);
         }
       };
     cloud_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(
       "cloud_filtered", 10, pub_options);
   } else {
     cloud_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("cloud_filtered", 10);
-    scan_sub_.subscribe(this, "scan", rclcpp::SensorDataQoS());
+    scan_sub_.subscribe(this, "scan", rmw_qos_profile_sensor_data);
   }
   #else
   cloud_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("cloud_filtered", 10);
-  scan_sub_.subscribe(this, "scan", rclcpp::SensorDataQoS());
+  scan_sub_.subscribe(this, "scan", rmw_qos_profile_sensor_data);
   #endif
 
   cloud_filter_chain_.configure(

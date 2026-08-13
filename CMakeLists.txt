@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 project(laser_filters)
 
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-
 ##############################################################################
 # Find dependencies
 ##############################################################################
@@ -56,12 +54,7 @@ if(BUILD_TESTING)
     set(TEST_NAME test_scan_filter_chain)
     set(RESULT_FILENAME ${AMENT_TEST_RESULTS_DIR}/${PROJECT_NAME}/${TEST_NAME}.gtest.xml)
     ament_add_gtest_executable(${TEST_NAME} test/${TEST_NAME}.cpp)
-    target_link_libraries(${TEST_NAME}
-        pluginlib::pluginlib
-        rclcpp::rclcpp
-        filters::filter_chain
-        ${sensor_msgs_TARGETS}
-    )
+    ament_target_dependencies(${TEST_NAME} filters pluginlib rclcpp sensor_msgs)
     ament_add_test(
         ${TEST_NAME}
         COMMAND
@@ -74,10 +67,8 @@ if(BUILD_TESTING)
     set(TEST_NAME test_shadow_detector)
     set(RESULT_FILENAME ${AMENT_TEST_RESULTS_DIR}/${PROJECT_NAME}/${TEST_NAME}.gtest.xml)
     ament_add_gtest_executable(${TEST_NAME} test/${TEST_NAME}.cpp)
-    target_link_libraries(${TEST_NAME}
-        angles::angles
-        laser_scan_filters
-    )
+    ament_target_dependencies(${TEST_NAME} angles)
+    target_link_libraries(${TEST_NAME} laser_scan_filters)
     ament_add_test(
         ${TEST_NAME}
         COMMAND
@@ -90,7 +81,8 @@ if(BUILD_TESTING)
     set(TEST_NAME test_speckle_filter)
     set(RESULT_FILENAME ${AMENT_TEST_RESULTS_DIR}/${PROJECT_NAME}/${TEST_NAME}.gtest.xml)
     ament_add_gtest_executable(${TEST_NAME} test/${TEST_NAME}.cpp)
-    target_link_libraries(${TEST_NAME} angles::angles laser_scan_filters)
+    ament_target_dependencies(${TEST_NAME} angles)
+    target_link_libraries(${TEST_NAME} laser_scan_filters)
     ament_add_test(
         ${TEST_NAME}
         COMMAND
@@ -103,9 +95,25 @@ if(BUILD_TESTING)
     set(TEST_NAME test_scan_shadows_filter)
     set(RESULT_FILENAME ${AMENT_TEST_RESULTS_DIR}/${PROJECT_NAME}/${TEST_NAME}.gtest.xml)
     ament_add_gtest_executable(${TEST_NAME} test/${TEST_NAME}.cpp)
+    ament_target_dependencies(${TEST_NAME} filters rclcpp sensor_msgs)
+    target_link_libraries(${TEST_NAME} laser_scan_filters)
+    ament_add_test(
+        ${TEST_NAME}
+        COMMAND
+            $<TARGET_FILE:${TEST_NAME}>
+            --ros-args
+            --gtest_output=xml:${RESULT_FILENAME}
+        RESULT_FILE ${RESULT_FILENAME}
+    )
+
+    set(TEST_NAME test_angular_bounds_filter)
+    set(RESULT_FILENAME ${AMENT_TEST_RESULTS_DIR}/${PROJECT_NAME}/${TEST_NAME}.gtest.xml)
+    ament_add_gtest_executable(${TEST_NAME} test/${TEST_NAME}.cpp)
     target_link_libraries(${TEST_NAME}
-        laser_scan_filters
+        laser_scan_filters 
+        pluginlib::pluginlib
         rclcpp::rclcpp
+        filters::filter_chain
         ${sensor_msgs_TARGETS}
     )
     ament_add_test(
