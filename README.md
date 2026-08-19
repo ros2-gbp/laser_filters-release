@@ -1,3 +1,26 @@
+## laser_filters (jazzy) - 2.0.10-2
+
+The packages in the `laser_filters` repository were released into the `jazzy` distro by running `/usr/bin/bloom-release laser_filters -r jazzy` on `Wed, 19 Aug 2026 23:27:08 -0000`
+
+The `laser_filters` package was released.
+
+Version of package(s) in repository `laser_filters`:
+
+- upstream repository: https://github.com/ros-perception/laser_filters.git
+- release repository: https://github.com/ros2-gbp/laser_filters-release.git
+- rosdistro version: `2.0.9-1`
+- old version: `2.0.10-1`
+- new version: `2.0.10-2`
+
+Versions of tools used:
+
+- bloom version: `0.12.0`
+- catkin_pkg version: `1.0.0`
+- rosdep version: `0.26.0`
+- rosdistro version: `1.0.1`
+- vcstools version: `0.1.42`
+
+
 ## laser_filters (jazzy) - 2.0.10-1
 
 The packages in the `laser_filters` repository were released into the `jazzy` distro by running `/usr/bin/bloom-release laser_filters -r jazzy` on `Thu, 13 Aug 2026 00:17:51 -0000`
