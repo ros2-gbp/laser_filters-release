@@ -34,10 +34,10 @@
 #include <sensor_msgs/msg/laser_scan.hpp>
 
 // TF
-#include <tf2_ros/transform_listener.h>
-#include "tf2_ros/message_filter.h"
+#include <tf2_ros/transform_listener.hpp>
+#include <tf2_ros/message_filter.hpp>
 
-#include "message_filters/subscriber.h"
+#include <message_filters/subscriber.hpp>
 
 #include "filters/filter_chain.hpp"
 
@@ -65,6 +65,7 @@ protected:
   #endif
   std::string tf_message_filter_target_frame_;
   double tf_filter_tolerance_;
+  int scan_filtered_history_depth_;
 
   // Diagnostic updater
   diagnostic_updater::Heartbeat heartbeat_diagnostics_;

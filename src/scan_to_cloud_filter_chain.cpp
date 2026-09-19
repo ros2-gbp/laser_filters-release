@@ -45,9 +45,8 @@ ScanToCloudFilterChain::ScanToCloudFilterChain(
   diagnostic_updater_(this),
   laser_max_range_(DBL_MAX),
   buffer_(this->get_clock()),
-  tf_(buffer_),
-  filter_(scan_sub_, buffer_, "", 50, this->get_node_logging_interface(),
-    this->get_node_clock_interface()),
+  tf_(buffer_, this),
+  filter_(scan_sub_, buffer_, "", 50, *this),
   cloud_filter_chain_("sensor_msgs::msg::PointCloud2"),
   scan_filter_chain_("sensor_msgs::msg::LaserScan")
 {
@@ -84,32 +83,31 @@ ScanToCloudFilterChain::ScanToCloudFilterChain(
       std::placeholders::_1));
   filter_.setTolerance(std::chrono::duration<double>(tf_tolerance_));
 
-  auto timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(
-    this->get_node_base_interface(),
-    this->get_node_timers_interface());
+  auto timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(*this);
   buffer_.setCreateTimerInterface(timer_interface);
 
+  rclcpp::PublisherOptions pub_options;
+  pub_options.qos_overriding_options = rclcpp::QosOverridingOptions::with_default_policies();
   #ifdef RCLCPP_SUPPORTS_MATCHED_CALLBACKS
   if (lazy_subscription_) {
-    rclcpp::PublisherOptions pub_options;
     pub_options.event_callbacks.matched_callback =
       [this](rclcpp::MatchedInfo & s)
       {
         if (s.current_count == 0) {
           scan_sub_.unsubscribe();
         } else if (!scan_sub_.getSubscriber()) {
-          scan_sub_.subscribe(this, "scan", rmw_qos_profile_sensor_data);
+          scan_sub_.subscribe(this, "scan", rclcpp::SensorDataQoS());
         }
       };
     cloud_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(
       "cloud_filtered", 10, pub_options);
   } else {
-    cloud_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("cloud_filtered", 10);
-    scan_sub_.subscribe(this, "scan", rmw_qos_profile_sensor_data);
+    cloud_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("cloud_filtered", 10, pub_options);
+    scan_sub_.subscribe(this, "scan", rclcpp::SensorDataQoS());
   }
   #else
-  cloud_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("cloud_filtered", 10);
-  scan_sub_.subscribe(this, "scan", rmw_qos_profile_sensor_data);
+  cloud_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("cloud_filtered", 10, pub_options);
+  scan_sub_.subscribe(this, "scan", rclcpp::SensorDataQoS());
   #endif
 
   cloud_filter_chain_.configure(
